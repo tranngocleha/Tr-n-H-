@@ -1,0 +1,41 @@
+# Cấu hình đồng bộ dữ liệu chấm công vân tay -> HRM
+# Copy file này thành config.yaml và chỉnh lại theo hệ thống thực tế.
+# Mật khẩu/API key KHÔNG đặt ở đây - đặt trong file .env (xem .env.example).
+
+source:
+  # Loại driver ODBC: "mssql" (SQL Server) hoặc "access" (file .mdb/.accdb)
+  driver_type: mssql
+
+  # --- Dùng khi driver_type = mssql ---
+  server: "192.168.1.100"      # IP/host nơi phần mềm chấm công lưu DB
+  database: "AttendanceDB"
+  username: "sa"
+
+  # --- Dùng khi driver_type = access (bỏ comment và điền, xoá 3 dòng mssql ở trên) ---
+  # mdb_path: "\\\\192.168.1.100\\share\\Attendance.mdb"
+
+  # Tên bảng log chấm công - xác nhận lại bằng sql/explore_attendance_db.sql
+  table: "CHECKINOUT"
+  columns:
+    employee_code: "USERID"
+    checktime: "CHECKTIME"
+    check_type: "CHECKTYPE"     # vd: I = vào, O = ra (tuỳ từng phần mềm)
+    device_id: "SENSORID"
+
+  # Cột dùng để lấy bản ghi mới, phải tăng dần theo thời gian
+  cursor_column: "CHECKTIME"
+
+hrm:
+  base_url: "https://hrm.company.com"
+  endpoint: "/api/attendance/import"
+  auth_type: "api_key"          # api_key | bearer
+  auth_header: "X-API-Key"
+  timeout_seconds: 15
+  max_retries: 3
+  batch_size: 200
+
+sync:
+  state_file: "./state/sync_state.json"
+  poll_interval_seconds: 300     # dùng cho chế độ run-loop
+  timezone: "Asia/Ho_Chi_Minh"
+  log_file: "./logs/attendance_sync.log"

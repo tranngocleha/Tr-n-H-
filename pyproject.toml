@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "attendance-sync"
+version = "0.1.0"
+description = "Đồng bộ dữ liệu chấm công vân tay lên HRM"
+requires-python = ">=3.9"
+dependencies = [
+    "pyodbc>=5.0.0",
+    "requests>=2.31.0",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
