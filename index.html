@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cờ Vua</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>♞ Cờ Vua</h1>
+    </header>
+
+    <main>
+      <div class="board-wrap">
+        <div id="status" class="status">Trắng đi</div>
+        <div id="board" class="board"></div>
+        <div class="captured">
+          <div id="captured-w" class="captured-row"></div>
+          <div id="captured-b" class="captured-row"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="control-group">
+          <label>Chế độ chơi</label>
+          <select id="mode-select">
+            <option value="pvp">2 người chơi</option>
+            <option value="ai" selected>Đấu với máy</option>
+          </select>
+        </section>
+
+        <section class="control-group" id="ai-options">
+          <label>Độ khó</label>
+          <select id="difficulty-select">
+            <option value="2">Dễ</option>
+            <option value="3" selected>Trung bình</option>
+            <option value="4">Khó</option>
+          </select>
+          <label>Bạn chơi quân</label>
+          <select id="side-select">
+            <option value="w" selected>Trắng</option>
+            <option value="b">Đen</option>
+          </select>
+        </section>
+
+        <section class="control-group buttons">
+          <button id="new-game-btn">Chơi mới</button>
+          <button id="undo-btn">Lùi nước</button>
+          <button id="flip-btn">Lật bàn cờ</button>
+        </section>
+
+        <section class="history">
+          <label>Lịch sử nước đi</label>
+          <ol id="move-list"></ol>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div id="promotion-modal" class="modal hidden">
+    <div class="modal-content">
+      <p>Chọn quân phong cấp:</p>
+      <div id="promotion-choices" class="promotion-choices"></div>
+    </div>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="ai.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
