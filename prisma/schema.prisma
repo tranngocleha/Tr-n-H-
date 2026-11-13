@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  RECRUITER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(RECRUITER)
+  createdAt    DateTime @default(now())
+
+  candidates Candidate[]
+  jobs       Job[]
+  notes      Note[]
+}
+
+enum CandidateSource {
+  UPLOAD
+  URL_IMPORT
+  MANUAL
+}
+
+model Candidate {
+  id                String          @id @default(cuid())
+  fullName          String
+  email             String?
+  phone             String?
+  location          String?
+  industry          String?
+  yearsOfExperience Float?
+  skills            String[]        @default([])
+  summary           String?
+  rawText           String?
+  resumeFileName    String?
+  resumeFilePath    String?
+  sourceType        CandidateSource @default(MANUAL)
+  sourceUrl         String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+
+  applications Application[]
+  notes        Note[]
+
+  @@index([industry])
+  @@index([fullName])
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+model Job {
+  id             String    @id @default(cuid())
+  title          String
+  department     String?
+  industry       String?
+  location       String?
+  employmentType String?
+  description    String
+  requiredSkills String[]  @default([])
+  status         JobStatus @default(OPEN)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+
+  applications Application[]
+
+  @@index([status])
+}
+
+enum PipelineStage {
+  SOURCED
+  SCREENING
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+}
+
+model Application {
+  id             String        @id @default(cuid())
+  candidateId    String
+  candidate      Candidate     @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  jobId          String
+  job            Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  stage          PipelineStage @default(SOURCED)
+  matchScore     Float?
+  matchRationale String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([candidateId, jobId])
+  @@index([jobId, stage])
+}
+
+model Note {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  authorId    String?
+  author      User?     @relation(fields: [authorId], references: [id])
+  body        String
+  createdAt   DateTime  @default(now())
+}
